@@ -11,6 +11,8 @@ import static org.hamcrest.CoreMatchers.hasItems;
 @QuarkusTest
 class OrdersResourcesTest {
 
+    private static final String CLERCK = "O atributo 'clerk' deve ser preenchido";
+
     @Test
     void shouldReturnTwoErrorInOpenStatus() {
         final OrderVO order = createOrder();
@@ -25,7 +27,7 @@ class OrdersResourcesTest {
             .statusCode(400)
             .body("errorMessage", hasItems(
                         "O atributo 'openDate' deve ser preenchido",
-                        "O atributo 'clerk' deve ser preenchido"
+                        CLERCK
                     ));
     }
 
@@ -41,6 +43,24 @@ class OrdersResourcesTest {
         .then()
             .log().all()
             .statusCode(200);
+    }
+
+    @Test
+    void shouldReturnOneErrorInStausCanceled() {
+        final OrderVO order = createOrder();
+        order.setStatusCurrent("CANCELED");
+
+        given()
+                .body(order)
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/orders")
+                .then()
+                .log().all()
+                .statusCode(400)
+                .body("errorMessage", hasItems(
+                        CLERCK
+                ));
     }
 
 

@@ -26,7 +26,6 @@ public class OrderValidator implements ConstraintValidator<OrderValid, OrderVO> 
         constraintValidatorContext.disableDefaultConstraintViolation();
         AtomicBoolean isValid = new AtomicBoolean(true);
         fields.forEach(field -> {
-            log.debug("field  name {}", field.getName());
             if(isContainsStatus(field, order.getStatusCurrent()) && isAttributeNull(order, field.getName())){
                 isValid.set(false);
                 constraintValidatorContext.buildConstraintViolationWithTemplate(formatMessage(field))
