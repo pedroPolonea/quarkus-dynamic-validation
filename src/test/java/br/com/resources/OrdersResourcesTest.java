@@ -5,31 +5,50 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
-
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.hasItems;
 
 @QuarkusTest
 class OrdersResourcesTest {
 
     @Test
-    void addOrder() {
-        final OrderVO order = OrderVO.builder()
-                .clerk("Fulano")
-                .client("Ciclano")
-                //.openDate(LocalDateTime.now().toString())
-                .statusCurrent("OPEN")
-                .build();
+    void shouldReturnTwoErrorInOpenStatus() {
+        final OrderVO order = createOrder();
 
         given()
-                .contentType(ContentType.JSON)
-                .body(order)
+            .body(order)
+            .contentType(ContentType.JSON)
         .when()
-                .post("/orders")
-                .then()
-                .log().all()
-                .statusCode(200);
-                //.body(is("hello"));
+            .post("/orders")
+        .then()
+            .log().all()
+            .statusCode(400)
+            .body("errorMessage", hasItems(
+                        "O atributo 'openDate' deve ser preenchido",
+                        "O atributo 'clerk' deve ser preenchido"
+                    ));
+    }
+
+    void shouldNotReturnErrorInStatusProcessing() {
+        final OrderVO order = createOrder();
+        order.setStatusCurrent("PROCESSING");
+
+        given()
+            .body(order)
+            .contentType(ContentType.JSON)
+        .when()
+            .post("/orders")
+        .then()
+            .log().all()
+            .statusCode(200);
+    }
+
+
+
+    private OrderVO createOrder(){
+        return OrderVO.builder()
+                .client("Ciclano")
+                .statusCurrent("OPEN")
+                .build();
     }
 }

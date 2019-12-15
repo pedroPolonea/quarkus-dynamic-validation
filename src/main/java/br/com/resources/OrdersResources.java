@@ -9,7 +9,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 
 @Slf4j
 @Path("/orders")
@@ -20,6 +19,7 @@ public class OrdersResources {
     @POST
     public OrderVO addOrder(@Valid final OrderVO orderVO) {
         log.info("M=clerk orderVO={}", orderVO);
+
         return orderVO;
     }
 }
